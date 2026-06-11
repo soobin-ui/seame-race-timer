@@ -369,6 +369,73 @@
   .auto-toggle input:checked + .track .thumb{transform:translateX(19px);}
   .auto-toggle input:focus-visible + .track{box-shadow:0 0 0 3px rgba(43,109,255,.3);}
 
+  /* gold ceremony button */
+  .toolbar button.gold{
+    background:linear-gradient(120deg,#f5a623,#ffd76e);color:#5a3d00;border:none;font-weight:800;
+    box-shadow:0 6px 18px rgba(245,166,35,.35);
+  }
+  .toolbar button.gold:hover{filter:brightness(1.06);color:#5a3d00;transform:translateY(-1px);}
+
+  /* ===== CEREMONY OVERLAY ===== */
+  #ceremony{
+    position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+    background:radial-gradient(900px 500px at 50% 30%, rgba(20,40,90,.82), rgba(8,21,50,.94));
+    backdrop-filter:blur(6px);overflow:hidden;
+  }
+  #ceremony.show{display:flex;}
+  #confettiCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  .cer-card{
+    position:relative;z-index:2;text-align:center;color:#fff;padding:10px 20px;max-width:92vw;
+    animation:cerPop .6s cubic-bezier(.2,1.3,.4,1) both;
+  }
+  @keyframes cerPop{from{opacity:0;transform:scale(.7) translateY(30px);}to{opacity:1;transform:none;}}
+  .cer-flag{
+    width:64px;height:44px;margin:0 auto 6px;border-radius:5px;
+    background:conic-gradient(#0c2046 90deg,#fff 90deg 180deg,#0c2046 180deg 270deg,#fff 270deg) 0 0/16px 16px;
+    border:2px solid #fff;box-shadow:0 6px 20px rgba(0,0,0,.4);
+    animation:flagWave 1.4s ease-in-out infinite;transform-origin:left center;
+  }
+  @keyframes flagWave{0%,100%{transform:rotate(-4deg) skewX(0deg);}50%{transform:rotate(3deg) skewX(-6deg);}}
+  .cer-kicker{
+    font-family:var(--display);letter-spacing:6px;font-size:clamp(12px,1.6vw,16px);
+    color:var(--cyan-300);text-transform:uppercase;margin-bottom:6px;
+  }
+  .cer-trophy{font-size:clamp(64px,10vw,120px);line-height:1;filter:drop-shadow(0 8px 24px rgba(245,166,35,.6));
+    animation:trophyBounce 1.1s ease-in-out infinite;}
+  @keyframes trophyBounce{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-14px) rotate(3deg);}}
+  .cer-champion{
+    font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:8px;
+    font-size:clamp(22px,3.4vw,42px);margin:4px 0 2px;
+    background:linear-gradient(90deg,#ffd76e,#f5a623,#ffe9b0);-webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 30px rgba(245,166,35,.4);
+  }
+  .cer-name{
+    font-weight:900;font-size:clamp(38px,7vw,90px);line-height:1.05;margin:2px 0 4px;
+    color:#fff;text-shadow:0 4px 24px rgba(30,200,255,.5), 3px 3px 0 rgba(43,109,255,.45);word-break:break-all;
+  }
+  .cer-time{
+    font-family:var(--mono);font-weight:700;font-size:clamp(24px,4vw,52px);color:var(--cyan-300);
+    text-shadow:0 0 22px var(--cyan-glow);margin-bottom:18px;
+  }
+  .cer-time small{font-family:var(--display);font-size:.4em;letter-spacing:3px;color:#9fb8e0;display:block;margin-bottom:2px;}
+  .cer-runners{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+  .cer-run{
+    background:rgba(255,255,255,.07);border:1px solid rgba(159,184,224,.28);border-radius:12px;
+    padding:10px 18px;min-width:120px;animation:cerPop .6s ease both;
+  }
+  .cer-run:nth-child(1){animation-delay:.25s;} .cer-run:nth-child(2){animation-delay:.4s;}
+  .cer-run .rk{font-family:var(--display);letter-spacing:2px;font-size:12px;color:#9fb8e0;}
+  .cer-run .nm{font-weight:800;font-size:clamp(15px,1.8vw,20px);margin:2px 0;color:#fff;}
+  .cer-run .tm{font-family:var(--mono);font-weight:700;font-size:clamp(13px,1.5vw,16px);color:var(--cyan-300);}
+  .cer-actions{display:flex;gap:10px;justify-content:center;}
+  .cer-actions button{
+    font-family:var(--display);letter-spacing:1px;font-weight:800;font-size:14px;padding:11px 22px;border-radius:10px;transition:.15s;
+  }
+  .cer-replay{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.32);color:#fff;}
+  .cer-replay:hover{background:rgba(255,255,255,.22);}
+  .cer-close{background:linear-gradient(120deg,var(--blue-600),var(--cyan-400));color:#fff;border:none;}
+  .cer-close:hover{filter:brightness(1.08);}
+
   .toast{
     position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
     background:var(--navy-900);color:#fff;padding:12px 18px 12px 22px;border-radius:10px;font-weight:700;font-size:14px;
@@ -394,6 +461,7 @@
 <div class="checker"></div>
 
 <div class="toolbar">
+  <button id="btnCeremony" class="gold">🏆 레이스 종료 · 시상식</button>
   <button id="btnPresent" class="primary">📺 발표 모드</button>
   <span class="spacer op-only"></span>
   <button id="btnExportCsv" class="op-only">⬇ 결과 CSV</button>
@@ -482,6 +550,23 @@
     <div class="kerb"></div>
     <div class="podium" id="podium"></div>
     <div class="rank-grid" id="rankGrid"></div>
+  </div>
+</div>
+
+<div id="ceremony">
+  <canvas id="confettiCanvas"></canvas>
+  <div class="cer-card">
+    <div class="cer-flag"></div>
+    <div class="cer-kicker">Race Finished · 우승</div>
+    <div class="cer-trophy">🏆</div>
+    <div class="cer-champion">Champion</div>
+    <div class="cer-name" id="cerName">—</div>
+    <div class="cer-time"><small>Best Time</small><span id="cerTime">--:--.---</span></div>
+    <div class="cer-runners" id="cerRunners"></div>
+    <div class="cer-actions">
+      <button class="cer-replay" id="cerReplay">↻ 다시 보기</button>
+      <button class="cer-close" id="cerClose">닫기</button>
+    </div>
   </div>
 </div>
 
@@ -755,6 +840,7 @@ swResetBtn.addEventListener("click",swResetFn);
 document.addEventListener("keydown",e=>{
   const tag=(e.target.tagName||"").toLowerCase();
   if(tag==="input"||tag==="select"||tag==="textarea") return;
+  if(document.getElementById("ceremony").classList.contains("show")) return;
   if(e.code==="Space"){e.preventDefault();swToggleFn();}
   else if(e.key==="r"||e.key==="R"){swResetFn();}
 });
@@ -903,6 +989,124 @@ function toast(msg, onUndo){
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>toastEl.classList.remove("show"), onUndo?4500:1800);
 }
+
+/* ======================= 시상식 (팡파레 + 컨페티) ======================= */
+const ceremony=document.getElementById("ceremony"),
+      cerName=document.getElementById("cerName"),
+      cerTime=document.getElementById("cerTime"),
+      cerRunners=document.getElementById("cerRunners"),
+      confettiCanvas=document.getElementById("confettiCanvas");
+const cctx=confettiCanvas.getContext("2d");
+let confettiParticles=[], confettiRAF=null, confettiUntil=0;
+const CONFETTI_COLORS=["#f5a623","#ffd76e","#2b6dff","#1ec8ff","#19b56a","#ffffff","#4f8aff"];
+
+function sizeCanvas(){
+  confettiCanvas.width=window.innerWidth;
+  confettiCanvas.height=window.innerHeight;
+}
+function spawnConfetti(burst){
+  const W=confettiCanvas.width;
+  for(let i=0;i<burst;i++){
+    confettiParticles.push({
+      x:Math.random()*W, y:-20-Math.random()*confettiCanvas.height*0.3,
+      vx:(Math.random()-0.5)*5, vy:2+Math.random()*4,
+      size:6+Math.random()*8, rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.3,
+      color:CONFETTI_COLORS[(i*7+((Math.random()*CONFETTI_COLORS.length)|0))%CONFETTI_COLORS.length],
+      shape:Math.random()<0.5?"rect":"circle"
+    });
+  }
+}
+function confettiTick(){
+  const W=confettiCanvas.width, H=confettiCanvas.height;
+  cctx.clearRect(0,0,W,H);
+  const now=performance.now();
+  for(const p of confettiParticles){
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.vx*=0.99; p.rot+=p.vr;
+    cctx.save(); cctx.translate(p.x,p.y); cctx.rotate(p.rot); cctx.fillStyle=p.color;
+    if(p.shape==="rect") cctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
+    else { cctx.beginPath(); cctx.arc(0,0,p.size/2,0,Math.PI*2); cctx.fill(); }
+    cctx.restore();
+  }
+  confettiParticles=confettiParticles.filter(p=>p.y<H+30);
+  if(now<confettiUntil && confettiParticles.length<260 && Math.random()<0.5) spawnConfetti(10);
+  if(confettiParticles.length>0 || now<confettiUntil){
+    confettiRAF=requestAnimationFrame(confettiTick);
+  } else { cctx.clearRect(0,0,W,H); confettiRAF=null; }
+}
+function startConfetti(){
+  sizeCanvas();
+  confettiUntil=performance.now()+5200;
+  spawnConfetti(160);
+  if(!confettiRAF) confettiTick();
+}
+window.addEventListener("resize",()=>{ if(ceremony.classList.contains("show")) sizeCanvas(); });
+
+/* 팡파레 — Web Audio로 합성 (오프라인, 외부파일 불필요) */
+let audioCtx=null;
+function playFanfare(){
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended") audioCtx.resume();
+    const t0=audioCtx.currentTime;
+    // 승리 팡파레: G4 G4 G4 C5 ... E5 G5(롱)
+    const seq=[
+      {f:392.00,t:0.00,d:0.16},{f:392.00,t:0.16,d:0.16},{f:392.00,t:0.32,d:0.16},
+      {f:523.25,t:0.50,d:0.42},
+      {f:392.00,t:0.95,d:0.16},{f:523.25,t:1.12,d:0.16},
+      {f:659.25,t:1.30,d:0.55},
+      {f:783.99,t:1.85,d:0.85}
+    ];
+    seq.forEach(n=>{
+      ["sawtooth","square"].forEach((type,idx)=>{
+        const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+        o.type=type; o.frequency.value=n.f*(idx?1.001:1);
+        const start=t0+n.t, end=start+n.d;
+        g.gain.setValueAtTime(0,start);
+        g.gain.linearRampToValueAtTime(idx?0.06:0.14, start+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0008, end);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(start); o.stop(end+0.05);
+      });
+    });
+    // 베이스 깔기
+    const bass=audioCtx.createOscillator(), bg=audioCtx.createGain();
+    bass.type="triangle"; bass.frequency.setValueAtTime(130.81,t0); bass.frequency.setValueAtTime(196.00,t0+1.30);
+    bg.gain.setValueAtTime(0.0,t0); bg.gain.linearRampToValueAtTime(0.10,t0+0.05);
+    bg.gain.exponentialRampToValueAtTime(0.0008,t0+2.7);
+    bass.connect(bg); bg.connect(audioCtx.destination); bass.start(t0); bass.stop(t0+2.75);
+  }catch(e){ console.warn("fanfare failed",e); }
+}
+
+function runCeremony(){
+  startConfetti();
+  playFanfare();
+}
+function openCeremony(){
+  const ranked=rankedTeams().filter(t=>bestOf(t.a1,t.a2)!=null);
+  if(ranked.length===0){ toast("기록이 있는 팀이 없습니다 — 먼저 기록을 입력하세요"); return; }
+  const champ=ranked[0];
+  cerName.textContent=champ.name;
+  cerTime.textContent=formatTime(bestOf(champ.a1,champ.a2));
+  const medals=["🥈","🥉"];
+  cerRunners.innerHTML=ranked.slice(1,3).map((t,i)=>
+    '<div class="cer-run"><div class="rk">'+medals[i]+' '+(i+2)+'위</div>'+
+    '<div class="nm">'+escapeHtml(t.name)+'</div>'+
+    '<div class="tm">'+formatTime(bestOf(t.a1,t.a2))+'</div></div>'
+  ).join("");
+  ceremony.classList.add("show");
+  runCeremony();
+}
+function closeCeremony(){
+  ceremony.classList.remove("show");
+  confettiUntil=0;
+  if(confettiRAF){ cancelAnimationFrame(confettiRAF); confettiRAF=null; }
+  confettiParticles=[]; cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+}
+document.getElementById("btnCeremony").addEventListener("click",openCeremony);
+document.getElementById("cerClose").addEventListener("click",closeCeremony);
+document.getElementById("cerReplay").addEventListener("click",runCeremony);
+ceremony.addEventListener("click",e=>{ if(e.target===ceremony) closeCeremony(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && ceremony.classList.contains("show")) closeCeremony(); });
 
 /* ======================= init ======================= */
 load();
