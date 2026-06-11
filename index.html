@@ -309,13 +309,80 @@
   body.present .pcard .ptime{font-size:clamp(16px,1.8vw,24px);}
   body.present .pcard.p1 .ptime{font-size:clamp(20px,2.4vw,32px);}
 
+  /* step chip */
+  .card-h .step{
+    font-size:10px;letter-spacing:1px;color:#fff;background:linear-gradient(120deg,var(--blue-600),var(--cyan-400));
+    padding:2px 8px;border-radius:6px;font-weight:800;
+  }
+  /* team registration */
+  .add-row{display:flex;gap:8px;}
+  .add-row input{flex:1;}
+  .add-btn-sm{
+    flex:0 0 auto;padding:0 16px;border-radius:9px;color:#fff;font-weight:800;font-size:14px;
+    font-family:var(--display);letter-spacing:1px;white-space:nowrap;
+    background:linear-gradient(120deg,var(--blue-600),var(--cyan-400));
+    box-shadow:0 4px 12px rgba(20,86,232,.28);transition:.15s;
+  }
+  .add-btn-sm:hover{filter:brightness(1.07);transform:translateY(-1px);}
+  .link-toggle{
+    background:none;color:var(--blue-600);font-size:12px;font-weight:700;padding:8px 0 4px;
+    margin-top:2px;
+  }
+  .link-toggle:hover{text-decoration:underline;}
+  .manual-fields{margin-top:6px;}
+  .team-count{
+    margin-top:8px;font-family:var(--display);font-size:11px;letter-spacing:1px;
+    color:var(--muted);text-transform:uppercase;
+  }
+  /* current racer bar */
+  .current-bar{
+    margin-bottom:14px;padding:12px;border-radius:10px;
+    background:linear-gradient(120deg,#eef4ff,#e7f6ff);border:1px solid #bfe0f5;
+  }
+  .cb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .cb-label{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:1px;color:var(--navy-800);}
+  .next-badge{
+    font-family:var(--display);font-size:11px;font-weight:800;letter-spacing:.5px;
+    padding:3px 10px;border-radius:999px;color:#fff;background:var(--silver);text-transform:uppercase;
+  }
+  .next-badge.a1{background:linear-gradient(120deg,var(--green),#15d182);}
+  .next-badge.a2{background:linear-gradient(120deg,var(--blue-600),var(--cyan-400));}
+  .next-badge.done{background:var(--silver);}
+  .current-bar select{
+    width:100%;padding:11px;border-radius:9px;border:1px solid var(--line-2);background:#fff;
+    color:var(--ink);font-size:15px;font-weight:700;
+  }
+  /* auto toggle switch */
+  .auto-toggle{
+    display:flex;align-items:center;gap:10px;margin:14px 0 4px;cursor:pointer;
+    font-size:13px;font-weight:700;color:var(--navy-800);
+  }
+  .auto-toggle input{position:absolute;opacity:0;width:0;height:0;}
+  .auto-toggle .track{
+    flex:0 0 auto;width:42px;height:23px;border-radius:999px;background:#c4d2e4;position:relative;transition:.2s;
+  }
+  .auto-toggle .thumb{
+    position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.25);transition:.2s;
+  }
+  .auto-toggle input:checked + .track{background:linear-gradient(120deg,var(--green),#15d182);}
+  .auto-toggle input:checked + .track .thumb{transform:translateX(19px);}
+  .auto-toggle input:focus-visible + .track{box-shadow:0 0 0 3px rgba(43,109,255,.3);}
+
   .toast{
     position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
-    background:var(--navy-900);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;
+    background:var(--navy-900);color:#fff;padding:12px 18px 12px 22px;border-radius:10px;font-weight:700;font-size:14px;
     border:1px solid var(--navy-700);box-shadow:0 10px 30px rgba(8,21,50,.45);
     opacity:0;pointer-events:none;transition:.25s;z-index:50;
+    display:flex;align-items:center;gap:14px;
   }
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .toast .undo{
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;
+    font-weight:800;font-size:12px;padding:5px 12px;border-radius:7px;cursor:pointer;white-space:nowrap;
+  }
+  .toast .undo:hover{background:rgba(255,255,255,.22);}
+  .toast .undo.hidden{display:none;}
 
 </style>
 </head>
@@ -339,10 +406,49 @@
 <div class="wrap">
   <!-- LEFT -->
   <div class="left-col">
+    <!-- STEP 1 : 팀 등록 -->
     <div class="card" style="margin-bottom:18px;">
       <div class="kerb"></div>
-      <div class="card-h"><span class="flag"></span> RACE TIMER</div>
+      <div class="card-h"><span class="flag"></span> <span class="step">STEP 1</span> 팀 등록</div>
+      <div class="form-body">
+        <div class="field">
+          <label>Team Name</label>
+          <div class="add-row">
+            <input id="inName" placeholder="팀 이름 입력 후 Enter">
+            <button class="add-btn-sm" id="btnAdd">＋ 등록</button>
+          </div>
+        </div>
+        <button type="button" class="link-toggle" id="toggleManual">▾ 기록 직접 입력 (선택)</button>
+        <div class="manual-fields" id="manualFields" hidden>
+          <div class="two">
+            <div class="field">
+              <label>1st Attempt</label>
+              <input id="inA1" placeholder="예: 01:23.4">
+            </div>
+            <div class="field">
+              <label>2nd Attempt</label>
+              <input id="inA2" placeholder="예: 01:23.4">
+            </div>
+          </div>
+        </div>
+        <div class="form-msg" id="formMsg"></div>
+        <div class="team-count" id="teamCount">등록된 팀 0</div>
+      </div>
+    </div>
+
+    <!-- STEP 2 : RACE TIMER -->
+    <div class="card">
+      <div class="kerb"></div>
+      <div class="card-h"><span class="flag"></span> <span class="step">STEP 2</span> RACE TIMER</div>
       <div class="sw-body">
+        <div class="current-bar">
+          <div class="cb-head">
+            <span class="cb-label">🏎 현재 주행 팀</span>
+            <span class="next-badge" id="nextBadge">팀 선택</span>
+          </div>
+          <select id="applyTeam"><option value="">팀 선택…</option></select>
+        </div>
+
         <div class="sw-screen">
           <div class="lights"><i></i><i></i><i></i><i></i><i></i></div>
           <div class="sw-time" id="swDisplay">00:00<span class="cs">.0</span></div>
@@ -354,37 +460,19 @@
         </div>
         <div class="sw-hint"><kbd>Space</kbd> 시작/정지 · <kbd>R</kbd> 리셋</div>
 
-        <div class="apply">
-          <div class="ttl">⏱ 측정 기록 적용</div>
-          <select id="applyTeam"><option value="">팀 선택…</option></select>
-          <div class="slot">
-            <button id="applyA1">1차 기록에 적용</button>
-            <button id="applyA2">2차 기록에 적용</button>
-          </div>
-        </div>
-      </div>
-    </div>
+        <label class="auto-toggle">
+          <input type="checkbox" id="autoRecord" checked>
+          <span class="track"><span class="thumb"></span></span>
+          <span class="at-text">정지 시 다음 기록 칸에 자동 저장</span>
+        </label>
 
-    <div class="card">
-      <div class="kerb"></div>
-      <div class="card-h"><span class="flag"></span> ADD ENTRY</div>
-      <div class="form-body">
-        <div class="field">
-          <label>Team Name</label>
-          <input id="inName" placeholder="팀 이름 입력">
-        </div>
-        <div class="two">
-          <div class="field">
-            <label>1st Attempt</label>
-            <input id="inA1" placeholder="예: 01:23.4">
-          </div>
-          <div class="field">
-            <label>2nd Attempt</label>
-            <input id="inA2" placeholder="예: 01:23.4">
+        <div class="apply">
+          <div class="ttl">⏱ 수동 적용 (덮어쓰기)</div>
+          <div class="slot">
+            <button id="applyA1">1차에 적용</button>
+            <button id="applyA2">2차에 적용</button>
           </div>
         </div>
-        <button class="add-btn" id="btnAdd">Add Entry</button>
-        <div class="form-msg" id="formMsg"></div>
       </div>
     </div>
   </div>
@@ -397,7 +485,7 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast"><span id="toastMsg"></span><button class="undo hidden" id="toastUndo">↩ 되돌리기</button></div>
 
 <script>
 "use strict";
@@ -651,6 +739,7 @@ function swStopFn(){
   swToggle.textContent="시작"; swToggle.className="btn-start";
   document.body.classList.remove("sw-on");
   swRender();
+  maybeAutoRecord();
 }
 function swToggleFn(){ swRunning?swStopFn():swStartFn(); }
 function swResetFn(){
@@ -670,28 +759,76 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="r"||e.key==="R"){swResetFn();}
 });
 
-/* 측정값 적용 */
+/* 측정값 적용 — 현재 주행 팀 + 자동/수동 기록 */
 const applyTeam=document.getElementById("applyTeam");
+const nextBadge=document.getElementById("nextBadge");
+const autoRecord=document.getElementById("autoRecord");
+const teamCountEl=document.getElementById("teamCount");
+const slotName={a1:"1차",a2:"2차"};
+
 function refreshApplySelect(){
   const cur=applyTeam.value;
   applyTeam.innerHTML='<option value="">팀 선택…</option>'+
     teams.map(t=>'<option value="'+t.id+'">'+escapeHtml(t.name)+'</option>').join("");
   if(teams.some(t=>String(t.id)===cur)) applyTeam.value=cur;
+  teamCountEl.textContent="등록된 팀 "+teams.length;
+  updateNextBadge();
 }
+function currentTeam(){ const id=+applyTeam.value; return id?teams.find(x=>x.id===id):null; }
+function nextSlot(t){ if(!t) return null; if(t.a1==null) return "a1"; if(t.a2==null) return "a2"; return null; }
+function updateNextBadge(){
+  const t=currentTeam();
+  if(!t){ nextBadge.textContent="팀 선택"; nextBadge.className="next-badge"; return; }
+  const slot=nextSlot(t);
+  if(slot){ nextBadge.textContent="다음 ▶ "+slotName[slot]; nextBadge.className="next-badge "+slot; }
+  else { nextBadge.textContent="기록 완료"; nextBadge.className="next-badge done"; }
+}
+
+// 한 슬롯에 기록 쓰기 + 되돌리기 토스트. 정지 후 timer는 그대로 두고, 자동 저장 시에만 리셋.
+function writeRecord(t, slot, ms, {autoReset}={}){
+  const prev=t[slot];
+  t[slot]=ms;
+  if(autoReset) swResetFn();
+  render();
+  toast(t.name+" "+slotName[slot]+" 기록 저장 · "+formatTime(ms), ()=>{
+    t[slot]=prev; render(); toast(t.name+" "+slotName[slot]+" 기록 되돌림");
+  });
+}
+
+// 수동 버튼: 지정 슬롯에 강제 적용(차 있으면 확인)
 function applyToSlot(slot){
-  const id=+applyTeam.value;
-  if(!id){toast("적용할 팀을 먼저 선택하세요");return;}
-  const t=teams.find(x=>x.id===id);
-  if(!t) return;
+  const t=currentTeam();
+  if(!t){toast("적용할 팀을 먼저 선택하세요");return;}
   const ms=Math.round(swCurrent());
   if(ms<=0){toast("측정된 기록이 없습니다");return;}
-  if(t[slot]!=null && !confirm((slot==="a1"?"1차":"2차")+" 기록을 "+formatTime(t[slot])+" → "+formatTime(ms)+" (으)로 덮어쓸까요?")) return;
-  t[slot]=ms;
-  render();
-  toast(t.name+" "+(slot==="a1"?"1차":"2차")+" 기록 적용: "+formatTime(ms));
+  if(t[slot]!=null && !confirm(slotName[slot]+" 기록을 "+formatTime(t[slot])+" → "+formatTime(ms)+" (으)로 덮어쓸까요?")) return;
+  writeRecord(t, slot, ms, {autoReset:false});
 }
 document.getElementById("applyA1").addEventListener("click",()=>applyToSlot("a1"));
 document.getElementById("applyA2").addEventListener("click",()=>applyToSlot("a2"));
+
+// 정지 시 자동 기록: 현재 팀의 다음 빈 슬롯(1차→2차)에 저장
+function maybeAutoRecord(){
+  if(!autoRecord.checked) return;
+  const t=currentTeam();
+  if(!t) return;                                   // 팀 미선택이면 수동 적용 버튼 사용
+  const ms=Math.round(swCurrent());
+  if(ms<=0) return;
+  const slot=nextSlot(t);
+  if(!slot){ toast(t.name+" 1·2차 모두 기록됨 — 수동 적용/수정하세요"); return; }
+  writeRecord(t, slot, ms, {autoReset:true});
+}
+
+applyTeam.addEventListener("change", updateNextBadge);
+
+// STEP 1: 기록 직접 입력 토글
+const toggleManual=document.getElementById("toggleManual");
+const manualFields=document.getElementById("manualFields");
+toggleManual.addEventListener("click",()=>{
+  const open=manualFields.hidden;
+  manualFields.hidden=!open;
+  toggleManual.textContent=(open?"▴":"▾")+" 기록 직접 입력 (선택)";
+});
 
 /* ======================= 발표 모드 ======================= */
 const btnPresent=document.getElementById("btnPresent");
@@ -751,13 +888,20 @@ document.getElementById("btnReset").addEventListener("click",()=>{
   teams=[]; nextId=1; render(); toast("전체 초기화 완료");
 });
 
-/* ======================= toast ======================= */
+/* ======================= toast (옵션: 되돌리기) ======================= */
 let toastTimer=null;
-function toast(msg){
-  const el=document.getElementById("toast");
-  el.textContent=msg; el.classList.add("show");
+const toastEl=document.getElementById("toast"),
+      toastMsg=document.getElementById("toastMsg"),
+      toastUndo=document.getElementById("toastUndo");
+let undoFn=null;
+toastUndo.addEventListener("click",()=>{ if(undoFn){const f=undoFn; undoFn=null; f();} toastEl.classList.remove("show"); });
+function toast(msg, onUndo){
+  toastMsg.textContent=msg;
+  undoFn=onUndo||null;
+  toastUndo.classList.toggle("hidden", !onUndo);
+  toastEl.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove("show"),1800);
+  toastTimer=setTimeout(()=>toastEl.classList.remove("show"), onUndo?4500:1800);
 }
 
 /* ======================= init ======================= */
