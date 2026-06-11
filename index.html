@@ -254,37 +254,37 @@
   /* ============ RANKING ============ */
   .rank-grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:10px 18px 18px;align-content:start;}
   @media(max-width:1100px){.rank-grid{grid-template-columns:1fr;} .podium{grid-template-columns:1fr;align-items:stretch;}}
-  table{width:100%;border-collapse:collapse;font-size:clamp(14px,1vw,17px);}
+  table{width:100%;border-collapse:collapse;font-size:clamp(16px,1.2vw,20px);}
   thead th{
     background:linear-gradient(120deg,var(--navy-900),var(--navy-700));
-    color:#dce9ff;font-family:var(--display);font-size:clamp(11px,.9vw,13px);font-weight:700;letter-spacing:1.2px;
-    padding:11px 6px;text-align:center;text-transform:uppercase;
+    color:#dce9ff;font-family:var(--display);font-size:clamp(12px,1vw,15px);font-weight:700;letter-spacing:1.2px;
+    padding:12px 6px;text-align:center;text-transform:uppercase;
   }
   thead th:first-child{border-radius:9px 0 0 0;}
   thead th:last-child{border-radius:0 9px 0 0;}
-  tbody td{padding:6px;text-align:center;border-bottom:1px solid #eaf0f8;vertical-align:middle;}
+  tbody td{padding:7px 6px;text-align:center;border-bottom:1px solid #eaf0f8;vertical-align:middle;}
   tbody tr:not(.empty):hover td{background:#f6f9ff;}
   tbody tr.empty td{color:#c3cfdf;}
   .rankbadge{
-    width:31px;height:31px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
-    font-family:var(--display);font-weight:800;font-size:15px;color:#fff;
+    width:36px;height:36px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:800;font-size:18px;color:#fff;
     background:linear-gradient(140deg,var(--blue-500),var(--navy-700));
   }
   .rankbadge.r1{background:linear-gradient(140deg,#ffc24d,var(--gold));box-shadow:0 0 0 3px #ffeec9;}
   .rankbadge.r2{background:linear-gradient(140deg,#b9c5d4,var(--silver));box-shadow:0 0 0 3px #e9eef4;}
   .rankbadge.r3{background:linear-gradient(140deg,#eb9a60,var(--bronze));box-shadow:0 0 0 3px #f8e2d2;}
   .rankbadge.empty{background:transparent;color:#c9d6e6;border:2px dashed #dde7f2;}
-  .team{font-weight:800;text-align:left;padding-left:12px;font-size:clamp(15px,1.05vw,18px);}
+  .team{font-weight:800;text-align:left;padding-left:12px;font-size:clamp(17px,1.3vw,22px);}
   .rec{
-    font-family:var(--mono);font-weight:700;font-size:clamp(14px,1vw,17px);
-    padding:6px 8px;border-radius:7px;background:#eef4ff;color:var(--navy-700);
-    display:inline-block;min-width:86px;border:1px solid transparent;
+    font-family:var(--mono);font-weight:700;font-size:clamp(16px,1.2vw,20px);
+    padding:7px 9px;border-radius:8px;background:#eef4ff;color:var(--navy-700);
+    display:inline-block;min-width:96px;border:1px solid transparent;
   }
-  .rec.none{background:#f0f3f8;color:#9aabc2;font-family:var(--body);font-weight:600;font-size:13px;}
+  .rec.none{background:#f0f3f8;color:#9aabc2;font-family:var(--body);font-weight:600;font-size:14px;}
   .rec.best{background:linear-gradient(120deg,#e2f6ff,#e8f0ff);color:var(--blue-600);border-color:#9fd8f5;}
-  .rec.placeholder{background:transparent;border:1px dashed #dee8f3;color:#c9d6e6;min-width:74px;}
+  .rec.placeholder{background:transparent;border:1px dashed #dee8f3;color:#c9d6e6;min-width:80px;}
   .acts{display:inline-flex;gap:5px;}
-  .acts button{width:28px;height:28px;border-radius:7px;font-weight:900;font-size:13px;color:#fff;transition:.12s;}
+  .acts button{width:31px;height:31px;border-radius:8px;font-weight:900;font-size:14px;color:#fff;transition:.12s;}
   .acts .e{background:var(--blue-500);} .acts .r{background:var(--gold);} .acts .d{background:var(--danger);}
   .acts button:hover{filter:brightness(1.12);transform:translateY(-1px);}
   td .edit-in{width:84px;padding:6px;border-radius:7px;border:1px solid var(--blue-400);font-family:var(--mono);font-size:13px;text-align:center;}
