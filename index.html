@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 SEA:ME HACKATHON · RACE CONTROL</title>
+<style>
+  :root{
+    /* poster palette → light base */
+    --navy-950:#081532; --navy-900:#0c2046; --navy-800:#123059; --navy-700:#1a3d6e;
+    --blue-600:#1456e8; --blue-500:#2b6dff; --blue-400:#4f8aff;
+    --cyan-400:#1ec8ff; --cyan-300:#62dcff; --cyan-glow:rgba(30,200,255,.45);
+    --ink:#102342; --muted:#5c6f8f; --line:#d9e3f2; --line-2:#c4d4ea;
+    --bg:#edf2f9; --card:#ffffff;
+    --gold:#f5a623; --silver:#98a6b8; --bronze:#d97b3f;
+    --danger:#e8453a; --green:#19b56a; --purple:#8b5cf6;
+    --shadow:0 14px 40px rgba(12,32,70,.10);
+    --radius:14px;
+    --display:'Bahnschrift','Arial Narrow','Segoe UI',sans-serif;
+    --mono:'Cascadia Mono','Consolas',ui-monospace,Menlo,monospace;
+    --body:'Pretendard','Segoe UI','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--body);color:var(--ink);
+    background:
+      linear-gradient(rgba(20,86,232,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(20,86,232,.035) 1px,transparent 1px),
+      radial-gradient(900px 380px at 80% -5%, rgba(30,200,255,.12), transparent),
+      radial-gradient(900px 380px at 10% -5%, rgba(43,109,255,.10), transparent),
+      var(--bg);
+    background-size:28px 28px,28px 28px,auto,auto,auto;
+    min-height:100vh;-webkit-font-smoothing:antialiased;
+  }
+  h1{margin:0;} button{font-family:inherit;cursor:pointer;border:none;} input,select{font-family:inherit;}
+
+  /* ============ HEADER : poster glitch band ============ */
+  .hero{
+    position:relative;color:#fff;overflow:hidden;
+    background:
+      radial-gradient(700px 280px at 85% 20%, rgba(30,200,255,.25), transparent),
+      radial-gradient(500px 240px at 8% 80%, rgba(79,138,255,.28), transparent),
+      linear-gradient(120deg,var(--navy-950) 0%,var(--navy-900) 55%,var(--navy-800) 100%);
+    padding:30px 24px 26px;text-align:center;
+  }
+  .hero::before{ /* diagonal speed lines */
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+    background:repeating-linear-gradient(115deg,transparent 0 90px,rgba(255,255,255,.028) 90px 92px);
+  }
+  .hero .title{
+    font-family:var(--display);font-stretch:condensed;font-weight:800;
+    font-size:clamp(38px,5.6vw,64px);letter-spacing:3px;line-height:1.02;
+    text-transform:uppercase;
+    text-shadow:3px 3px 0 rgba(30,200,255,.55), -2px -2px 0 rgba(43,109,255,.4);
+  }
+  .hero .title .colon{color:var(--cyan-400);}
+  .hero .title .yr{
+    color:var(--cyan-300);
+    text-shadow:3px 3px 0 rgba(43,109,255,.5), -2px -2px 0 rgba(30,200,255,.35);
+  }
+  .hero .tagline{
+    margin-top:8px;font-size:clamp(12px,1.4vw,15px);font-weight:600;color:#cfe4ff;letter-spacing:.5px;
+  }
+  .hero .tagline b{color:var(--cyan-300);}
+  /* checkered finish strip */
+  .checker{
+    height:14px;
+    background:
+      conic-gradient(var(--navy-950) 90deg,#fff 90deg 180deg,var(--navy-950) 180deg 270deg,#fff 270deg) 0 0/14px 14px;
+    border-bottom:3px solid var(--blue-600);
+  }
+
+  /* ============ TOOLBAR ============ */
+  .toolbar{
+    display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+    margin:18px auto 4px;max-width:1560px;padding:0 20px;
+  }
+  .toolbar button{
+    background:var(--card);border:1px solid var(--line-2);color:var(--navy-700);
+    padding:9px 16px;border-radius:9px;font-weight:700;font-size:13px;
+    box-shadow:0 2px 8px rgba(12,32,70,.06);transition:.15s;
+  }
+  .toolbar button:hover{border-color:var(--blue-400);color:var(--blue-600);transform:translateY(-1px);}
+  .toolbar button.primary{
+    background:linear-gradient(120deg,var(--blue-600),var(--cyan-400));color:#fff;border:none;
+    box-shadow:0 6px 18px rgba(20,86,232,.35);
+  }
+  .toolbar button.primary:hover{filter:brightness(1.07);color:#fff;}
+  .toolbar .spacer{flex:1 1 0;min-width:8px;}
+  .toolbar button.danger{color:var(--danger);}
+  .toolbar button.danger:hover{border-color:#f3b3ae;background:#fff5f4;color:var(--danger);}
+
+  /* ============ LAYOUT ============ */
+  .wrap{
+    max-width:1560px;margin:14px auto 50px;padding:0 20px;
+    display:grid;grid-template-columns:330px 1fr;gap:22px;align-items:start;
+  }
+  .card{
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    border:1px solid var(--line);overflow:hidden;
+  }
+  .kerb{ /* racing kerb stripe */
+    height:8px;
+    background:repeating-linear-gradient(-45deg,var(--blue-600) 0 14px,var(--navy-900) 14px 28px);
+  }
+  .card-h{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 18px 4px;
+    font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:2px;color:var(--navy-800);
+    text-transform:uppercase;
+  }
+  .card-h .flag{
+    width:14px;height:14px;border-radius:3px;
+    background:conic-gradient(var(--navy-900) 90deg,#fff 90deg 180deg,var(--navy-900) 180deg 270deg,#fff 270deg) 0 0/7px 7px;
+    border:1px solid var(--navy-900);
+  }
+
+  /* ============ STOPWATCH console ============ */
+  .sw-body{padding:14px 16px 20px;}
+  .sw-screen{
+    position:relative;border-radius:12px;padding:22px 12px 20px;text-align:center;
+    background:
+      radial-gradient(380px 140px at 50% 0%, rgba(30,200,255,.16), transparent),
+      linear-gradient(160deg,var(--navy-950),var(--navy-900));
+    border:1px solid var(--navy-700);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.35), 0 8px 22px rgba(12,32,70,.18);
+  }
+  .sw-screen::after{ /* carbon texture */
+    content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;opacity:.5;
+    background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(255,255,255,.022) 3px 6px);
+  }
+  /* F1 start lights */
+  .lights{display:flex;gap:9px;justify-content:center;margin-bottom:14px;}
+  .lights i{
+    width:13px;height:13px;border-radius:50%;
+    background:#1c2c52;border:1px solid #29407a;transition:.25s;
+  }
+  body.sw-on .lights i{
+    background:var(--green);border-color:#34d68b;
+    box-shadow:0 0 10px rgba(25,181,106,.8);
+    animation:pulse 1s infinite alternate;
+  }
+  body.sw-on .lights i:nth-child(2){animation-delay:.12s}
+  body.sw-on .lights i:nth-child(3){animation-delay:.24s}
+  body.sw-on .lights i:nth-child(4){animation-delay:.36s}
+  body.sw-on .lights i:nth-child(5){animation-delay:.48s}
+  @keyframes pulse{from{opacity:.55}to{opacity:1}}
+  .sw-time{
+    font-family:var(--mono);font-weight:700;font-size:48px;letter-spacing:1px;
+    color:var(--cyan-300);text-shadow:0 0 18px var(--cyan-glow);
+  }
+  .sw-time .cs{font-size:30px;color:var(--blue-400);}
+  .sw-label{
+    font-family:var(--display);font-size:11px;letter-spacing:4px;color:#7d97c8;
+    text-transform:uppercase;margin-top:6px;
+  }
+  .sw-btns{display:flex;gap:8px;justify-content:center;margin-top:16px;position:relative;z-index:1;}
+  .sw-btns button{
+    padding:10px 0;width:96px;border-radius:9px;font-weight:800;font-size:14px;color:#fff;
+    font-family:var(--display);letter-spacing:2px;text-transform:uppercase;transition:.15s;
+  }
+  .btn-reset{background:#233c6e;border:1px solid #355291;color:#bcd0f2;}
+  .btn-reset:hover{background:#2b4983;}
+  .btn-start{background:linear-gradient(120deg,var(--green),#15d182);box-shadow:0 4px 14px rgba(25,181,106,.4);}
+  .btn-stop{background:linear-gradient(120deg,var(--danger),#ff6a5c);box-shadow:0 4px 14px rgba(232,69,58,.4);}
+  .sw-btns button:hover{filter:brightness(1.08);}
+  .sw-hint{margin-top:9px;font-size:11px;color:var(--muted);text-align:center;}
+  .sw-hint kbd{
+    font-family:var(--mono);font-size:10px;background:#fff;border:1px solid var(--line-2);
+    border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--navy-700);
+  }
+
+  .apply{margin-top:14px;border-top:1px dashed var(--line-2);padding-top:13px;}
+  .apply .ttl{
+    font-family:var(--display);font-size:11px;font-weight:700;color:var(--blue-600);
+    letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;
+  }
+  .apply select{
+    width:100%;padding:10px;border-radius:9px;border:1px solid var(--line-2);background:#fbfdff;
+    color:var(--ink);font-size:13px;margin-bottom:8px;
+  }
+  .apply .slot{display:flex;gap:6px;}
+  .apply .slot button{
+    flex:1;padding:10px;border-radius:9px;border:1px solid var(--line-2);background:#fff;
+    color:var(--navy-700);font-weight:700;font-size:12px;transition:.15s;
+  }
+  .apply .slot button:hover{border-color:var(--blue-400);color:var(--blue-600);background:#f4f8ff;}
+
+  /* ============ ADD ENTRY ============ */
+  .form-body{padding:12px 16px 18px;}
+  .field{margin-bottom:11px;}
+  .field label{
+    display:block;font-family:var(--display);font-size:10px;font-weight:700;
+    letter-spacing:2px;color:var(--navy-700);margin-bottom:5px;text-transform:uppercase;
+  }
+  .field input{
+    width:100%;padding:11px 12px;border-radius:9px;border:1px solid var(--line-2);
+    background:#fbfdff;font-size:14px;color:var(--ink);transition:.15s;
+  }
+  .field input:focus{outline:none;border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(43,109,255,.15);background:#fff;}
+  .field input.err{border-color:var(--danger);background:#fff6f5;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .add-btn{
+    width:100%;margin-top:3px;padding:13px;border-radius:10px;color:#fff;font-weight:800;font-size:15px;
+    font-family:var(--display);letter-spacing:3px;text-transform:uppercase;
+    background:linear-gradient(120deg,var(--blue-600),var(--cyan-400));
+    box-shadow:0 6px 18px rgba(20,86,232,.3);transition:.15s;
+  }
+  .add-btn:hover{filter:brightness(1.07);transform:translateY(-1px);}
+  .form-msg{font-size:12px;color:var(--danger);margin-top:8px;min-height:15px;font-weight:600;}
+
+  /* ============ PODIUM ============ */
+  .podium{
+    display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:14px;align-items:end;
+    padding:18px 18px 4px;
+  }
+  .podium .pcard{
+    position:relative;border-radius:12px;padding:14px 14px 12px;text-align:center;overflow:hidden;
+    border:1px solid var(--line);background:linear-gradient(180deg,#fff,#f6f9ff);
+    animation:rise .5s ease both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .podium .pcard.p1{
+    border:1px solid rgba(245,166,35,.6);
+    background:linear-gradient(180deg,#fffdf5,#fff7e2);
+    box-shadow:0 10px 26px rgba(245,166,35,.18);padding-top:18px;padding-bottom:16px;
+  }
+  .podium .pcard.p2{background:linear-gradient(180deg,#fcfdff,#f1f5fb);}
+  .podium .pcard.p3{background:linear-gradient(180deg,#fffaf6,#fdf1e8);}
+  .pcard .pos{
+    font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:2px;
+    color:var(--muted);text-transform:uppercase;
+  }
+  .pcard.p1 .pos{color:#c07f0a;} .pcard.p3 .pos{color:#b35f25;}
+  .pcard .medal{font-size:26px;line-height:1.2;}
+  .pcard.p1 .medal{font-size:34px;}
+  .pcard .pname{font-weight:800;font-size:15px;margin:2px 0 4px;word-break:break-all;}
+  .pcard.p1 .pname{font-size:18px;}
+  .pcard .ptime{
+    font-family:var(--mono);font-weight:700;font-size:16px;color:var(--blue-600);
+  }
+  .pcard.p1 .ptime{font-size:20px;color:#b97a09;}
+  .pcard .stripe{position:absolute;top:0;left:0;right:0;height:5px;}
+  .pcard.p1 .stripe{background:linear-gradient(90deg,#f5a623,#ffd76e);}
+  .pcard.p2 .stripe{background:linear-gradient(90deg,#98a6b8,#c6d2de);}
+  .pcard.p3 .stripe{background:linear-gradient(90deg,#d97b3f,#efa977);}
+  .pcard.empty-p{opacity:.45;}
+  .pcard .ptime.none{color:#aab9cf;font-family:var(--body);font-weight:600;font-size:13px;}
+
+  /* ============ RANKING ============ */
+  .rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px;}
+  @media(max-width:1200px){.rank-grid{grid-template-columns:1fr;} .podium{grid-template-columns:1fr;align-items:stretch;}}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{
+    background:linear-gradient(120deg,var(--navy-900),var(--navy-700));
+    color:#dce9ff;font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:1.5px;
+    padding:12px 8px;text-align:center;text-transform:uppercase;
+  }
+  thead th:first-child{border-radius:9px 0 0 0;}
+  thead th:last-child{border-radius:0 9px 0 0;}
+  tbody td{padding:8px;text-align:center;border-bottom:1px solid #eaf0f8;vertical-align:middle;}
+  tbody tr:not(.empty):hover td{background:#f6f9ff;}
+  tbody tr.empty td{color:#c3cfdf;}
+  .rankbadge{
+    width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:800;font-size:14px;color:#fff;
+    background:linear-gradient(140deg,var(--blue-500),var(--navy-700));
+  }
+  .rankbadge.r1{background:linear-gradient(140deg,#ffc24d,var(--gold));box-shadow:0 0 0 3px #ffeec9;}
+  .rankbadge.r2{background:linear-gradient(140deg,#b9c5d4,var(--silver));box-shadow:0 0 0 3px #e9eef4;}
+  .rankbadge.r3{background:linear-gradient(140deg,#eb9a60,var(--bronze));box-shadow:0 0 0 3px #f8e2d2;}
+  .rankbadge.empty{background:transparent;color:#c9d6e6;border:2px dashed #dde7f2;}
+  .team{font-weight:800;text-align:left;padding-left:14px;}
+  .rec{
+    font-family:var(--mono);font-weight:700;font-size:13px;
+    padding:6px 6px;border-radius:7px;background:#eef4ff;color:var(--navy-700);
+    display:inline-block;min-width:80px;border:1px solid transparent;
+  }
+  .rec.none{background:#f0f3f8;color:#9aabc2;font-family:var(--body);font-weight:600;font-size:12px;}
+  .rec.best{background:linear-gradient(120deg,#e2f6ff,#e8f0ff);color:var(--blue-600);border-color:#9fd8f5;}
+  .rec.placeholder{background:transparent;border:1px dashed #dee8f3;color:#c9d6e6;min-width:70px;}
+  .acts{display:inline-flex;gap:5px;}
+  .acts button{width:26px;height:26px;border-radius:7px;font-weight:900;font-size:12px;color:#fff;transition:.12s;}
+  .acts .e{background:var(--blue-500);} .acts .d{background:var(--danger);}
+  .acts button:hover{filter:brightness(1.12);transform:translateY(-1px);}
+  td .edit-in{width:78px;padding:5px;border-radius:7px;border:1px solid var(--blue-400);font-family:var(--mono);font-size:12px;text-align:center;}
+  td .edit-name{width:92px;padding:5px;border-radius:7px;border:1px solid var(--blue-400);font-size:13px;}
+
+  /* ============ PRESENT MODE : poster stage ============ */
+  body.present{
+    background:
+      radial-gradient(800px 320px at 85% 0%, rgba(30,200,255,.16), transparent),
+      radial-gradient(700px 300px at 5% 10%, rgba(43,109,255,.14), transparent),
+      linear-gradient(160deg,var(--navy-950),var(--navy-900) 70%,var(--navy-800));
+  }
+  body.present .wrap{grid-template-columns:1fr;max-width:1700px;}
+  body.present .left-col{display:none;}
+  body.present .toolbar .op-only{display:none;}
+  body.present .toolbar button.primary{box-shadow:0 0 22px rgba(30,200,255,.4);}
+  body.present table{font-size:clamp(15px,1.8vw,25px);}
+  body.present thead th{padding:17px 10px;font-size:clamp(12px,1.2vw,17px);}
+  body.present tbody td{padding:14px 10px;}
+  body.present .rankbadge{width:clamp(34px,3.6vw,46px);height:clamp(34px,3.6vw,46px);font-size:clamp(15px,1.8vw,21px);}
+  body.present .rec{font-size:clamp(14px,1.7vw,23px);min-width:auto;}
+  body.present .acts,body.present .actions-col{display:none;}
+  body.present .pcard .pname{font-size:clamp(16px,1.8vw,24px);}
+  body.present .pcard.p1 .pname{font-size:clamp(19px,2.2vw,30px);}
+  body.present .pcard .ptime{font-size:clamp(16px,1.8vw,24px);}
+  body.present .pcard.p1 .ptime{font-size:clamp(20px,2.4vw,32px);}
+
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);
+    background:var(--navy-900);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;font-size:14px;
+    border:1px solid var(--navy-700);box-shadow:0 10px 30px rgba(8,21,50,.45);
+    opacity:0;pointer-events:none;transition:.25s;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1 class="title"><span class="yr">2026</span> SEA<span class="colon">:</span>ME HACKATHON</h1>
+  <div class="tagline"><b>스케일카 자율주행 챌린지</b> · SCALE-CAR RACE TIMING &amp; RANKING</div>
+</div>
+<div class="checker"></div>
+
+<div class="toolbar">
+  <button id="btnPresent" class="primary">📺 발표 모드</button>
+  <span class="spacer op-only"></span>
+  <button id="btnExportCsv" class="op-only">⬇ 결과 CSV</button>
+  <button id="btnExportJson" class="op-only">💾 백업(JSON)</button>
+  <button id="btnImport" class="op-only">📂 복원</button>
+  <input type="file" id="fileImport" accept="application/json" style="display:none">
+  <button id="btnReset" class="danger op-only">🗑 전체 초기화</button>
+</div>
+
+<div class="wrap">
+  <!-- LEFT -->
+  <div class="left-col">
+    <div class="card" style="margin-bottom:18px;">
+      <div class="kerb"></div>
+      <div class="card-h"><span class="flag"></span> RACE TIMER</div>
+      <div class="sw-body">
+        <div class="sw-screen">
+          <div class="lights"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="sw-time" id="swDisplay">00:00<span class="cs">.0</span></div>
+          <div class="sw-label">LAP TIME</div>
+          <div class="sw-btns">
+            <button class="btn-reset" id="swReset">리셋</button>
+            <button class="btn-start" id="swToggle">시작</button>
+          </div>
+        </div>
+        <div class="sw-hint"><kbd>Space</kbd> 시작/정지 · <kbd>R</kbd> 리셋</div>
+
+        <div class="apply">
+          <div class="ttl">⏱ 측정 기록 적용</div>
+          <select id="applyTeam"><option value="">팀 선택…</option></select>
+          <div class="slot">
+            <button id="applyA1">1차 기록에 적용</button>
+            <button id="applyA2">2차 기록에 적용</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="kerb"></div>
+      <div class="card-h"><span class="flag"></span> ADD ENTRY</div>
+      <div class="form-body">
+        <div class="field">
+          <label>Team Name</label>
+          <input id="inName" placeholder="팀 이름 입력">
+        </div>
+        <div class="two">
+          <div class="field">
+            <label>1st Attempt</label>
+            <input id="inA1" placeholder="예: 01:23.4">
+          </div>
+          <div class="field">
+            <label>2nd Attempt</label>
+            <input id="inA2" placeholder="예: 01:23.4">
+          </div>
+        </div>
+        <button class="add-btn" id="btnAdd">Add Entry</button>
+        <div class="form-msg" id="formMsg"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="card">
+    <div class="kerb"></div>
+    <div class="podium" id="podium"></div>
+    <div class="rank-grid" id="rankGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ======================= 시간 유틸 ======================= */
+// 콜론(:)이 있으면 분:초.밀리, 없으면 순수 '초'(소수 허용)
+function parseTime(raw){
+  if(raw==null) return null;
+  let s=String(raw).trim();
+  if(s==="") return null;
+  s=s.replace(/\s/g,"");
+  let m;
+  if((m=/^(\d{1,3}):([0-5]?\d)(?:[.,](\d{1,3}))?$/.exec(s))){
+    const min=+m[1], sec=+m[2];
+    const frac=m[3]?+("0."+m[3]):0;
+    return min*60000 + sec*1000 + Math.round(frac*1000);
+  }
+  if((m=/^(\d+)(?:[.,](\d{1,3}))?$/.exec(s))){
+    const sec=+m[1];
+    const frac=m[2]?+("0."+m[2]):0;
+    return Math.round((sec+frac)*1000);
+  }
+  return NaN;
+}
+function formatTime(ms){
+  if(ms==null) return null;
+  const total=Math.max(0,Math.round(ms));
+  const min=Math.floor(total/60000);
+  const sec=Math.floor((total%60000)/1000);
+  const mmm=total%1000;
+  return String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0")+"."+String(mmm).padStart(3,"0");
+}
+function bestOf(a,b){
+  const vals=[a,b].filter(v=>typeof v==="number" && !isNaN(v));
+  if(vals.length===0) return null;
+  return Math.min(...vals);
+}
+
+/* ======================= 상태 ======================= */
+const LS_KEY="seame2026.teams";
+let teams=[]; let nextId=1;
+
+function load(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){
+      const data=JSON.parse(raw);
+      teams=Array.isArray(data.teams)?data.teams:[];
+      nextId=data.nextId||(teams.reduce((mx,t)=>Math.max(mx,t.id),0)+1);
+    }
+  }catch(e){ console.warn("load failed",e); teams=[]; }
+}
+function save(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({teams,nextId})); }
+  catch(e){ console.warn("save failed",e); }
+}
+
+/* ======================= 랭킹 정렬 ======================= */
+function rankedTeams(){
+  const withRec=[], without=[];
+  teams.forEach((t,idx)=>{
+    const best=bestOf(t.a1,t.a2);
+    (best==null?without:withRec).push({t,best,idx});
+  });
+  withRec.sort((x,y)=> x.best-y.best || x.idx-y.idx);
+  return withRec.concat(without).map(o=>o.t);
+}
+
+/* ======================= 렌더 ======================= */
+const TOTAL_SLOTS=24, PER_COL=12;
+const rankGrid=document.getElementById("rankGrid");
+const podiumEl=document.getElementById("podium");
+
+function recCell(ms,isBest){
+  if(ms==null) return '<span class="rec none">기록 없음</span>';
+  return '<span class="rec'+(isBest?' best':'')+'">'+formatTime(ms)+'</span>';
+}
+function placeholderCell(){ return '<span class="rec placeholder">–</span>'; }
+
+function renderPodium(ranked){
+  const order=[1,0,2]; // P2 P1 P3 layout
+  const cls=["p2","p1","p3"];
+  const label=["P2","P1","P3"];
+  const medal=["🥈","🥇","🥉"];
+  podiumEl.innerHTML=order.map((ri,i)=>{
+    const t=ranked[ri];
+    const best=t?bestOf(t.a1,t.a2):null;
+    if(t && best!=null){
+      return '<div class="pcard '+cls[i]+'"><div class="stripe"></div>'+
+        '<div class="pos">'+label[i]+'</div><div class="medal">'+medal[i]+'</div>'+
+        '<div class="pname">'+escapeHtml(t.name)+'</div>'+
+        '<div class="ptime">'+formatTime(best)+'</div></div>';
+    }
+    return '<div class="pcard '+cls[i]+' empty-p"><div class="stripe"></div>'+
+      '<div class="pos">'+label[i]+'</div><div class="medal">'+medal[i]+'</div>'+
+      '<div class="pname">–</div><div class="ptime none">대기 중</div></div>';
+  }).join("");
+}
+
+function render(){
+  const ranked=rankedTeams();
+  renderPodium(ranked);
+  const cols=[[],[]];
+  for(let i=0;i<TOTAL_SLOTS;i++){
+    const colIdx=i<PER_COL?0:1;
+    const rankNo=i+1;
+    const t=ranked[i];
+    if(t){
+      const best=bestOf(t.a1,t.a2);
+      const a1best = best!=null && t.a1===best;
+      const a2best = best!=null && t.a2===best;
+      const medal = rankNo===1?' 🥇':rankNo===2?' 🥈':rankNo===3?' 🥉':'';
+      cols[colIdx].push(
+        '<tr data-id="'+t.id+'">'+
+          '<td><span class="rankbadge r'+(rankNo<=3?rankNo:'')+'">'+rankNo+'</span></td>'+
+          '<td class="team">'+escapeHtml(t.name)+medal+'</td>'+
+          '<td>'+recCell(t.a1,a1best)+'</td>'+
+          '<td>'+recCell(t.a2,a2best)+'</td>'+
+          '<td>'+(best==null?'<span class="rec none">–</span>':'<span class="rec best">'+formatTime(best)+'</span>')+'</td>'+
+          '<td class="actions-col"><span class="acts"><button class="e" title="수정" data-act="edit" data-id="'+t.id+'">E</button>'+
+            '<button class="d" title="삭제" data-act="del" data-id="'+t.id+'">D</button></span></td>'+
+        '</tr>'
+      );
+    }else{
+      cols[colIdx].push(
+        '<tr class="empty">'+
+          '<td><span class="rankbadge empty">'+rankNo+'</span></td>'+
+          '<td>–</td><td>'+placeholderCell()+'</td><td>'+placeholderCell()+'</td>'+
+          '<td>'+placeholderCell()+'</td><td class="actions-col">–</td>'+
+        '</tr>'
+      );
+    }
+  }
+  rankGrid.innerHTML = cols.map(rows=>tableHtml(rows.join(""))).join("");
+  refreshApplySelect();
+  save();
+}
+function tableHtml(body){
+  return '<table><thead><tr>'+
+    '<th>Rank</th><th>Team Name</th><th>1st Record</th><th>2nd Record</th><th>Best Time</th><th class="actions-col">Actions</th>'+
+    '</tr></thead><tbody>'+body+'</tbody></table>';
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ======================= 추가 ======================= */
+const inName=document.getElementById("inName"),
+      inA1=document.getElementById("inA1"),
+      inA2=document.getElementById("inA2"),
+      formMsg=document.getElementById("formMsg");
+
+function tryParseField(el){
+  const v=el.value.trim();
+  if(v===""){el.classList.remove("err");return {ok:true,ms:null};}
+  const ms=parseTime(v);
+  if(isNaN(ms)){el.classList.add("err");return {ok:false};}
+  el.classList.remove("err");return {ok:true,ms};
+}
+document.getElementById("btnAdd").addEventListener("click",addEntry);
+[inName,inA1,inA2].forEach(el=>el.addEventListener("keydown",e=>{if(e.key==="Enter")addEntry();}));
+
+function addEntry(){
+  formMsg.textContent="";
+  const name=inName.value.trim();
+  if(!name){inName.classList.add("err");formMsg.textContent="팀 이름을 입력하세요.";return;}
+  inName.classList.remove("err");
+  const r1=tryParseField(inA1), r2=tryParseField(inA2);
+  if(!r1.ok||!r2.ok){formMsg.textContent="기록 형식이 올바르지 않습니다. (예: 01:23.4 또는 83.4)";return;}
+  teams.push({id:nextId++,name,a1:r1.ms,a2:r2.ms});
+  inName.value="";inA1.value="";inA2.value="";
+  inName.focus();
+  render();
+  toast("'"+name+"' 추가됨");
+}
+
+/* ======================= 수정/삭제 ======================= */
+rankGrid.addEventListener("click",e=>{
+  const btn=e.target.closest("button[data-act]");
+  if(!btn) return;
+  const id=+btn.dataset.id, act=btn.dataset.act;
+  if(act==="del") deleteTeam(id);
+  else if(act==="edit") startEdit(id);
+  else if(act==="save") commitEdit(id);
+  else if(act==="cancel") render();
+});
+function deleteTeam(id){
+  const t=teams.find(x=>x.id===id);
+  if(!t) return;
+  if(!confirm("'"+t.name+"' 팀을 삭제할까요?")) return;
+  teams=teams.filter(x=>x.id!==id);
+  render(); toast("삭제됨");
+}
+function startEdit(id){
+  const t=teams.find(x=>x.id===id);
+  if(!t) return;
+  const tr=rankGrid.querySelector('tr[data-id="'+id+'"]');
+  if(!tr) return;
+  const cells=tr.children;
+  cells[1].innerHTML='<input class="edit-name" value="'+escapeHtml(t.name)+'">';
+  cells[2].innerHTML='<input class="edit-in" data-k="a1" value="'+(t.a1!=null?formatTime(t.a1):"")+'" placeholder="기록 없음">';
+  cells[3].innerHTML='<input class="edit-in" data-k="a2" value="'+(t.a2!=null?formatTime(t.a2):"")+'" placeholder="기록 없음">';
+  cells[5].innerHTML='<span class="acts"><button class="e" data-act="save" data-id="'+id+'">✓</button>'+
+                     '<button class="d" data-act="cancel" data-id="'+id+'">✕</button></span>';
+  const nameInput=cells[1].querySelector("input"); nameInput.focus(); nameInput.select();
+  tr.querySelectorAll("input").forEach(inp=>inp.addEventListener("keydown",ev=>{
+    if(ev.key==="Enter")commitEdit(id); if(ev.key==="Escape")render();
+  }));
+}
+function commitEdit(id){
+  const t=teams.find(x=>x.id===id);
+  if(!t) return;
+  const tr=rankGrid.querySelector('tr[data-id="'+id+'"]');
+  const name=tr.querySelector(".edit-name").value.trim();
+  if(!name){alert("팀 이름은 비울 수 없습니다.");return;}
+  const fields=tr.querySelectorAll(".edit-in");
+  const parsed={};
+  for(const f of fields){
+    const v=f.value.trim();
+    if(v===""){parsed[f.dataset.k]=null;continue;}
+    const ms=parseTime(v);
+    if(isNaN(ms)){alert("기록 형식 오류: "+v);return;}
+    parsed[f.dataset.k]=ms;
+  }
+  t.name=name; t.a1=parsed.a1; t.a2=parsed.a2;
+  render(); toast("수정됨");
+}
+
+/* ======================= 스톱워치 ======================= */
+let swStart=0, swElapsed=0, swRunning=false, swRAF=null;
+const swDisplay=document.getElementById("swDisplay"),
+      swToggle=document.getElementById("swToggle"),
+      swResetBtn=document.getElementById("swReset");
+
+function nowMs(){return performance.now();}
+function swCurrent(){return swElapsed + (swRunning?(nowMs()-swStart):0);}
+function swRender(){
+  const ms=swCurrent();
+  const min=Math.floor(ms/60000), sec=Math.floor((ms%60000)/1000), ds=Math.floor((ms%1000)/100);
+  swDisplay.innerHTML=String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0")+'<span class="cs">.'+ds+'</span>';
+}
+function swLoop(){ if(swRunning){swRender();swRAF=requestAnimationFrame(swLoop);} }
+function swStartFn(){
+  if(swRunning) return;
+  swRunning=true; swStart=nowMs();
+  swToggle.textContent="정지"; swToggle.className="btn-stop";
+  document.body.classList.add("sw-on");
+  swLoop();
+}
+function swStopFn(){
+  if(!swRunning) return;
+  swElapsed=swCurrent(); swRunning=false;
+  cancelAnimationFrame(swRAF);
+  swToggle.textContent="시작"; swToggle.className="btn-start";
+  document.body.classList.remove("sw-on");
+  swRender();
+}
+function swToggleFn(){ swRunning?swStopFn():swStartFn(); }
+function swResetFn(){
+  swRunning=false; cancelAnimationFrame(swRAF);
+  swElapsed=0; swStart=0;
+  swToggle.textContent="시작"; swToggle.className="btn-start";
+  document.body.classList.remove("sw-on");
+  swRender();
+}
+swToggle.addEventListener("click",swToggleFn);
+swResetBtn.addEventListener("click",swResetFn);
+
+document.addEventListener("keydown",e=>{
+  const tag=(e.target.tagName||"").toLowerCase();
+  if(tag==="input"||tag==="select"||tag==="textarea") return;
+  if(e.code==="Space"){e.preventDefault();swToggleFn();}
+  else if(e.key==="r"||e.key==="R"){swResetFn();}
+});
+
+/* 측정값 적용 */
+const applyTeam=document.getElementById("applyTeam");
+function refreshApplySelect(){
+  const cur=applyTeam.value;
+  applyTeam.innerHTML='<option value="">팀 선택…</option>'+
+    teams.map(t=>'<option value="'+t.id+'">'+escapeHtml(t.name)+'</option>').join("");
+  if(teams.some(t=>String(t.id)===cur)) applyTeam.value=cur;
+}
+function applyToSlot(slot){
+  const id=+applyTeam.value;
+  if(!id){toast("적용할 팀을 먼저 선택하세요");return;}
+  const t=teams.find(x=>x.id===id);
+  if(!t) return;
+  const ms=Math.round(swCurrent());
+  if(ms<=0){toast("측정된 기록이 없습니다");return;}
+  if(t[slot]!=null && !confirm((slot==="a1"?"1차":"2차")+" 기록을 "+formatTime(t[slot])+" → "+formatTime(ms)+" (으)로 덮어쓸까요?")) return;
+  t[slot]=ms;
+  render();
+  toast(t.name+" "+(slot==="a1"?"1차":"2차")+" 기록 적용: "+formatTime(ms));
+}
+document.getElementById("applyA1").addEventListener("click",()=>applyToSlot("a1"));
+document.getElementById("applyA2").addEventListener("click",()=>applyToSlot("a2"));
+
+/* ======================= 발표 모드 ======================= */
+const btnPresent=document.getElementById("btnPresent");
+btnPresent.addEventListener("click",()=>{
+  document.body.classList.toggle("present");
+  const on=document.body.classList.contains("present");
+  btnPresent.textContent=on?"🖥 운영 모드":"📺 발표 모드";
+});
+
+/* ======================= 백업/복원/내보내기 ======================= */
+function download(filename, text, type){
+  const blob=new Blob([text],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download=filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+document.getElementById("btnExportJson").addEventListener("click",()=>{
+  download("seame2026_backup.json", JSON.stringify({teams,nextId},null,2),"application/json");
+  toast("백업 파일 저장됨");
+});
+document.getElementById("btnExportCsv").addEventListener("click",()=>{
+  const ranked=rankedTeams();
+  const rows=[["순위","팀명","1차기록","2차기록","최고기록"]];
+  ranked.forEach((t,i)=>{
+    const best=bestOf(t.a1,t.a2);
+    rows.push([
+      i+1, t.name,
+      t.a1!=null?formatTime(t.a1):"",
+      t.a2!=null?formatTime(t.a2):"",
+      best!=null?formatTime(best):""
+    ]);
+  });
+  const csv="﻿"+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+  download("seame2026_results.csv", csv, "text/csv;charset=utf-8");
+  toast("결과 CSV 저장됨");
+});
+document.getElementById("btnImport").addEventListener("click",()=>document.getElementById("fileImport").click());
+document.getElementById("fileImport").addEventListener("change",e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!Array.isArray(data.teams)) throw new Error("형식 오류");
+      if(!confirm("현재 데이터를 복원 파일로 덮어쓸까요?")) return;
+      teams=data.teams; nextId=data.nextId||(teams.reduce((mx,t)=>Math.max(mx,t.id),0)+1);
+      render(); toast("복원 완료 ("+teams.length+"팀)");
+    }catch(err){ alert("복원 실패: "+err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value="";
+});
+document.getElementById("btnReset").addEventListener("click",()=>{
+  if(!confirm("모든 팀 기록을 삭제할까요? 되돌릴 수 없습니다.")) return;
+  if(!confirm("정말 전체 초기화하시겠습니까?")) return;
+  teams=[]; nextId=1; render(); toast("전체 초기화 완료");
+});
+
+/* ======================= toast ======================= */
+let toastTimer=null;
+function toast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove("show"),1800);
+}
+
+/* ======================= init ======================= */
+load();
+swRender();
+render();
+</script>
+</body>
+</html>
