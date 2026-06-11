@@ -94,7 +94,7 @@
   /* ============ LAYOUT ============ */
   .wrap{
     max-width:1560px;margin:14px auto 50px;padding:0 20px;
-    display:grid;grid-template-columns:330px 1fr;gap:22px;align-items:start;
+    display:grid;grid-template-columns:380px 1fr;gap:22px;align-items:start;
   }
   .card{
     background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
@@ -369,6 +369,48 @@
   .auto-toggle input:checked + .track .thumb{transform:translateX(19px);}
   .auto-toggle input:focus-visible + .track{box-shadow:0 0 0 3px rgba(43,109,255,.3);}
 
+  /* ===== 2-track lanes ===== */
+  .master-bar{display:flex;gap:8px;margin-bottom:12px;}
+  .master-bar button{font-family:var(--display);font-weight:800;letter-spacing:1px;border-radius:10px;padding:12px 0;transition:.15s;}
+  .m-start{flex:1;background:linear-gradient(120deg,var(--green),#15d182);color:#fff;box-shadow:0 5px 14px rgba(25,181,106,.4);font-size:15px;}
+  .m-start:hover{filter:brightness(1.07);transform:translateY(-1px);}
+  .m-reset{flex:0 0 auto;padding:12px 16px;background:#233c6e;color:#bcd0f2;border:1px solid #355291;font-size:13px;}
+  .m-reset:hover{background:#2b4983;}
+
+  .lanes{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .lane{border-radius:12px;padding:10px;border:1px solid var(--line-2);background:#fff;position:relative;overflow:hidden;transition:box-shadow .2s;}
+  .lane::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;}
+  .lane-a::before{background:linear-gradient(90deg,var(--cyan-400),#19b56a);}
+  .lane-b::before{background:linear-gradient(90deg,var(--blue-500),#8b5cf6);}
+  .lane-a.running{box-shadow:0 0 0 2px rgba(30,200,255,.5),0 8px 20px rgba(30,200,255,.25);}
+  .lane-b.running{box-shadow:0 0 0 2px rgba(79,138,255,.55),0 8px 20px rgba(43,109,255,.25);}
+  .lane-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:7px;}
+  .lane-tag{font-family:var(--display);font-weight:800;letter-spacing:1px;font-size:12px;padding:3px 9px;border-radius:6px;color:#fff;}
+  .lane-a .lane-tag{background:linear-gradient(120deg,#13b6c9,var(--cyan-400));}
+  .lane-b .lane-tag{background:linear-gradient(120deg,var(--blue-600),#6b8cff);}
+  .lane-head .next-badge{font-size:9px;padding:2px 7px;letter-spacing:0;}
+  .lane-team{width:100%;padding:8px;border-radius:8px;border:1px solid var(--line-2);background:#fbfdff;color:var(--ink);font-size:13px;font-weight:700;margin-bottom:8px;}
+  .lane-screen{position:relative;border-radius:9px;padding:10px 6px 8px;text-align:center;margin-bottom:8px;
+    background:linear-gradient(160deg,var(--navy-950),var(--navy-900));border:1px solid var(--navy-700);}
+  .lane-screen .lights{display:flex;gap:6px;justify-content:center;margin-bottom:6px;}
+  .lane-screen .lights i{width:8px;height:8px;border-radius:50%;background:#1c2c52;border:1px solid #29407a;transition:.25s;}
+  .lane.running .lights i{animation:pulse 1s infinite alternate;}
+  .lane-a.running .lights i{background:var(--cyan-400);border-color:var(--cyan-300);box-shadow:0 0 8px rgba(30,200,255,.8);}
+  .lane-b.running .lights i{background:var(--blue-400);border-color:#8fb4ff;box-shadow:0 0 8px rgba(79,138,255,.8);}
+  .lane.running .lights i:nth-child(2){animation-delay:.15s;} .lane.running .lights i:nth-child(3){animation-delay:.3s;}
+  .lane-time{font-family:var(--mono);font-weight:700;font-size:27px;letter-spacing:.5px;color:var(--cyan-300);text-shadow:0 0 14px var(--cyan-glow);}
+  .lane-b .lane-time{color:#9cc0ff;text-shadow:0 0 14px rgba(79,138,255,.5);}
+  .lane-time .cs{font-size:18px;opacity:.85;}
+  .lane-toggle{width:100%;padding:11px 0;border-radius:9px;font-family:var(--display);font-weight:800;letter-spacing:1px;font-size:15px;color:#fff;transition:.12s;
+    background:linear-gradient(120deg,var(--green),#15d182);box-shadow:0 4px 12px rgba(25,181,106,.35);}
+  .lane-toggle:hover{filter:brightness(1.07);}
+  .lane-toggle.stopping{background:linear-gradient(120deg,var(--danger),#ff6a5c);box-shadow:0 4px 12px rgba(232,69,58,.4);}
+  .lane-sub{display:flex;gap:5px;margin-top:6px;}
+  .lane-reset{flex:0 0 auto;width:34px;padding:7px 0;border-radius:7px;background:#eef2f8;border:1px solid var(--line-2);color:var(--navy-700);font-weight:800;font-size:14px;}
+  .lane-reset:hover{background:#e3ebf5;}
+  .lane-man{flex:1;padding:7px 0;border-radius:7px;background:#fff;border:1px solid var(--line-2);color:var(--navy-700);font-weight:700;font-size:11px;}
+  .lane-man:hover{border-color:var(--blue-400);color:var(--blue-600);background:#f4f8ff;}
+
   /* gold ceremony button */
   .toolbar button.gold{
     background:linear-gradient(120deg,#f5a623,#ffd76e);color:#5a3d00;border:none;font-weight:800;
@@ -504,43 +546,56 @@
       </div>
     </div>
 
-    <!-- STEP 2 : RACE TIMER -->
+    <!-- STEP 2 : RACE TIMER · 2트랙 -->
     <div class="card">
       <div class="kerb"></div>
-      <div class="card-h"><span class="flag"></span> <span class="step">STEP 2</span> RACE TIMER</div>
+      <div class="card-h"><span class="flag"></span> <span class="step">STEP 2</span> RACE TIMER · 2트랙</div>
       <div class="sw-body">
-        <div class="current-bar">
-          <div class="cb-head">
-            <span class="cb-label">🏎 현재 주행 팀</span>
-            <span class="next-badge" id="nextBadge">팀 선택</span>
-          </div>
-          <select id="applyTeam"><option value="">팀 선택…</option></select>
+        <div class="master-bar">
+          <button class="m-start" id="btnStartBoth">▶▶ 동시 출발</button>
+          <button class="m-reset" id="btnResetBoth">↺ 둘 다 리셋</button>
         </div>
 
-        <div class="sw-screen">
-          <div class="lights"><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="sw-time" id="swDisplay">00:00<span class="cs">.0</span></div>
-          <div class="sw-label">LAP TIME</div>
-          <div class="sw-btns">
-            <button class="btn-reset" id="swReset">리셋</button>
-            <button class="btn-start" id="swToggle">시작</button>
+        <div class="lanes">
+          <!-- TRACK A -->
+          <div class="lane lane-a" id="laneA">
+            <div class="lane-head"><span class="lane-tag">TRACK A</span><span class="next-badge" id="badgeA">팀 선택</span></div>
+            <select id="teamA" class="lane-team"><option value="">팀 선택…</option></select>
+            <div class="lane-screen">
+              <div class="lights"><i></i><i></i><i></i></div>
+              <div class="lane-time" id="dispA">00:00<span class="cs">.0</span></div>
+            </div>
+            <button class="lane-toggle" id="toggleA">▶ 시작</button>
+            <div class="lane-sub">
+              <button class="lane-reset" id="resetA" title="A 리셋">↺</button>
+              <button class="lane-man" data-lane="A" data-slot="a1">1차 수동</button>
+              <button class="lane-man" data-lane="A" data-slot="a2">2차 수동</button>
+            </div>
+          </div>
+
+          <!-- TRACK B -->
+          <div class="lane lane-b" id="laneB">
+            <div class="lane-head"><span class="lane-tag">TRACK B</span><span class="next-badge" id="badgeB">팀 선택</span></div>
+            <select id="teamB" class="lane-team"><option value="">팀 선택…</option></select>
+            <div class="lane-screen">
+              <div class="lights"><i></i><i></i><i></i></div>
+              <div class="lane-time" id="dispB">00:00<span class="cs">.0</span></div>
+            </div>
+            <button class="lane-toggle" id="toggleB">▶ 시작</button>
+            <div class="lane-sub">
+              <button class="lane-reset" id="resetB" title="B 리셋">↺</button>
+              <button class="lane-man" data-lane="B" data-slot="a1">1차 수동</button>
+              <button class="lane-man" data-lane="B" data-slot="a2">2차 수동</button>
+            </div>
           </div>
         </div>
-        <div class="sw-hint"><kbd>Space</kbd> 시작/정지 · <kbd>R</kbd> 리셋</div>
 
         <label class="auto-toggle">
           <input type="checkbox" id="autoRecord" checked>
           <span class="track"><span class="thumb"></span></span>
           <span class="at-text">정지 시 다음 기록 칸에 자동 저장</span>
         </label>
-
-        <div class="apply">
-          <div class="ttl">⏱ 수동 적용 (덮어쓰기)</div>
-          <div class="slot">
-            <button id="applyA1">1차에 적용</button>
-            <button id="applyA2">2차에 적용</button>
-          </div>
-        </div>
+        <div class="sw-hint"><kbd>Space</kbd> 동시 출발 · <kbd>A</kbd> A 정지 · <kbd>L</kbd> B 정지 · <kbd>R</kbd> 리셋</div>
       </div>
     </div>
   </div>
@@ -796,116 +851,132 @@ function commitEdit(id){
   render(); toast("수정됨");
 }
 
-/* ======================= 스톱워치 ======================= */
-let swStart=0, swElapsed=0, swRunning=false, swRAF=null;
-const swDisplay=document.getElementById("swDisplay"),
-      swToggle=document.getElementById("swToggle"),
-      swResetBtn=document.getElementById("swReset");
-
-function nowMs(){return performance.now();}
-function swCurrent(){return swElapsed + (swRunning?(nowMs()-swStart):0);}
-function swRender(){
-  const ms=swCurrent();
-  const min=Math.floor(ms/60000), sec=Math.floor((ms%60000)/1000), ds=Math.floor((ms%1000)/100);
-  swDisplay.innerHTML=String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0")+'<span class="cs">.'+ds+'</span>';
-}
-function swLoop(){ if(swRunning){swRender();swRAF=requestAnimationFrame(swLoop);} }
-function swStartFn(){
-  if(swRunning) return;
-  swRunning=true; swStart=nowMs();
-  swToggle.textContent="정지"; swToggle.className="btn-stop";
-  document.body.classList.add("sw-on");
-  swLoop();
-}
-function swStopFn(){
-  if(!swRunning) return;
-  swElapsed=swCurrent(); swRunning=false;
-  cancelAnimationFrame(swRAF);
-  swToggle.textContent="시작"; swToggle.className="btn-start";
-  document.body.classList.remove("sw-on");
-  swRender();
-  maybeAutoRecord();
-}
-function swToggleFn(){ swRunning?swStopFn():swStartFn(); }
-function swResetFn(){
-  swRunning=false; cancelAnimationFrame(swRAF);
-  swElapsed=0; swStart=0;
-  swToggle.textContent="시작"; swToggle.className="btn-start";
-  document.body.classList.remove("sw-on");
-  swRender();
-}
-swToggle.addEventListener("click",swToggleFn);
-swResetBtn.addEventListener("click",swResetFn);
-
-document.addEventListener("keydown",e=>{
-  const tag=(e.target.tagName||"").toLowerCase();
-  if(tag==="input"||tag==="select"||tag==="textarea") return;
-  if(document.getElementById("ceremony").classList.contains("show")) return;
-  if(e.code==="Space"){e.preventDefault();swToggleFn();}
-  else if(e.key==="r"||e.key==="R"){swResetFn();}
-});
-
-/* 측정값 적용 — 현재 주행 팀 + 자동/수동 기록 */
-const applyTeam=document.getElementById("applyTeam");
-const nextBadge=document.getElementById("nextBadge");
+/* ======================= 2트랙 타이머 ======================= */
 const autoRecord=document.getElementById("autoRecord");
 const teamCountEl=document.getElementById("teamCount");
 const slotName={a1:"1차",a2:"2차"};
 
-function refreshApplySelect(){
-  const cur=applyTeam.value;
-  applyTeam.innerHTML='<option value="">팀 선택…</option>'+
-    teams.map(t=>'<option value="'+t.id+'">'+escapeHtml(t.name)+'</option>').join("");
-  if(teams.some(t=>String(t.id)===cur)) applyTeam.value=cur;
-  teamCountEl.textContent="등록된 팀 "+teams.length;
-  updateNextBadge();
-}
-function currentTeam(){ const id=+applyTeam.value; return id?teams.find(x=>x.id===id):null; }
 function nextSlot(t){ if(!t) return null; if(t.a1==null) return "a1"; if(t.a2==null) return "a2"; return null; }
-function updateNextBadge(){
-  const t=currentTeam();
-  if(!t){ nextBadge.textContent="팀 선택"; nextBadge.className="next-badge"; return; }
-  const slot=nextSlot(t);
-  if(slot){ nextBadge.textContent="다음 ▶ "+slotName[slot]; nextBadge.className="next-badge "+slot; }
-  else { nextBadge.textContent="기록 완료"; nextBadge.className="next-badge done"; }
-}
 
-// 한 슬롯에 기록 쓰기 + 되돌리기 토스트. 정지 후 timer는 그대로 두고, 자동 저장 시에만 리셋.
-function writeRecord(t, slot, ms, {autoReset}={}){
+// 기록 쓰기 + 되돌리기 (타이머 리셋은 호출 측에서 처리)
+function writeRecord(t, slot, ms){
   const prev=t[slot];
   t[slot]=ms;
-  if(autoReset) swResetFn();
   render();
   toast(t.name+" "+slotName[slot]+" 기록 저장 · "+formatTime(ms), ()=>{
     t[slot]=prev; render(); toast(t.name+" "+slotName[slot]+" 기록 되돌림");
   });
 }
 
-// 수동 버튼: 지정 슬롯에 강제 적용(차 있으면 확인)
-function applyToSlot(slot){
-  const t=currentTeam();
-  if(!t){toast("적용할 팀을 먼저 선택하세요");return;}
-  const ms=Math.round(swCurrent());
-  if(ms<=0){toast("측정된 기록이 없습니다");return;}
-  if(t[slot]!=null && !confirm(slotName[slot]+" 기록을 "+formatTime(t[slot])+" → "+formatTime(ms)+" (으)로 덮어쓸까요?")) return;
-  writeRecord(t, slot, ms, {autoReset:false});
+// 한 트랙(레인) 타이머
+function makeLane(o){
+  const laneEl=document.getElementById(o.lane),
+        disp=document.getElementById(o.disp),
+        toggleEl=document.getElementById(o.toggle),
+        resetEl=document.getElementById(o.reset),
+        sel=document.getElementById(o.select),
+        badge=document.getElementById(o.badge);
+  let start=0, elapsed=0, running=false, raf=null;
+  const cur=()=>elapsed + (running?(performance.now()-start):0);
+  function teamObj(){ const id=+sel.value; return id?teams.find(t=>t.id===id):null; }
+  function renderTime(){
+    const ms=cur();
+    const min=Math.floor(ms/60000), sec=Math.floor((ms%60000)/1000), ds=Math.floor((ms%1000)/100);
+    disp.innerHTML=String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0")+'<span class="cs">.'+ds+'</span>';
+  }
+  function updateBadge(){
+    const t=teamObj();
+    if(!t){ badge.textContent="팀 선택"; badge.className="next-badge"; return; }
+    const slot=nextSlot(t);
+    if(slot){ badge.textContent="다음 ▶ "+slotName[slot]; badge.className="next-badge "+slot; }
+    else { badge.textContent="완료"; badge.className="next-badge done"; }
+  }
+  function loop(){ if(running){ renderTime(); raf=requestAnimationFrame(loop); } }
+  function startFn(){
+    if(running) return;
+    running=true; start=performance.now();
+    toggleEl.textContent="■ 정지"; toggleEl.classList.add("stopping");
+    laneEl.classList.add("running");
+    loop();
+  }
+  function stopFn(){
+    if(!running) return;
+    elapsed=cur(); running=false; cancelAnimationFrame(raf);
+    toggleEl.textContent="▶ 시작"; toggleEl.classList.remove("stopping");
+    laneEl.classList.remove("running");
+    renderTime();
+    autoRec();
+  }
+  function toggleFn(){ running?stopFn():startFn(); }
+  function resetFn(){
+    running=false; cancelAnimationFrame(raf); elapsed=0; start=0;
+    toggleEl.textContent="▶ 시작"; toggleEl.classList.remove("stopping");
+    laneEl.classList.remove("running");
+    renderTime();
+  }
+  function autoRec(){
+    if(!autoRecord.checked) return;
+    const t=teamObj(); if(!t) return;                 // 팀 미선택 → 수동 적용 사용
+    const ms=Math.round(cur()); if(ms<=0) return;
+    const slot=nextSlot(t);
+    if(!slot){ toast(t.name+" 1·2차 모두 기록됨 — 수동/수정하세요"); return; }
+    writeRecord(t, slot, ms);
+    resetFn();                                        // 자동 저장 후 이 트랙 0으로
+  }
+  function applyManual(slot){
+    const t=teamObj();
+    if(!t){ toast(o.label+"트랙: 팀을 먼저 선택하세요"); return; }
+    const ms=Math.round(cur());
+    if(ms<=0){ toast(o.label+"트랙: 측정된 기록이 없습니다"); return; }
+    if(t[slot]!=null && !confirm(t.name+" "+slotName[slot]+" 기록을 "+formatTime(t[slot])+" → "+formatTime(ms)+" (으)로 덮어쓸까요?")) return;
+    writeRecord(t, slot, ms);
+  }
+  toggleEl.addEventListener("click", toggleFn);
+  resetEl.addEventListener("click", resetFn);
+  sel.addEventListener("change", updateBadge);
+  renderTime();
+  return {startFn, stopFn, toggleFn, resetFn, updateBadge, applyManual, sel};
 }
-document.getElementById("applyA1").addEventListener("click",()=>applyToSlot("a1"));
-document.getElementById("applyA2").addEventListener("click",()=>applyToSlot("a2"));
 
-// 정지 시 자동 기록: 현재 팀의 다음 빈 슬롯(1차→2차)에 저장
-function maybeAutoRecord(){
-  if(!autoRecord.checked) return;
-  const t=currentTeam();
-  if(!t) return;                                   // 팀 미선택이면 수동 적용 버튼 사용
-  const ms=Math.round(swCurrent());
-  if(ms<=0) return;
-  const slot=nextSlot(t);
-  if(!slot){ toast(t.name+" 1·2차 모두 기록됨 — 수동 적용/수정하세요"); return; }
-  writeRecord(t, slot, ms, {autoReset:true});
+const laneA=makeLane({lane:"laneA", disp:"dispA", toggle:"toggleA", reset:"resetA", select:"teamA", badge:"badgeA", label:"A"});
+const laneB=makeLane({lane:"laneB", disp:"dispB", toggle:"toggleB", reset:"resetB", select:"teamB", badge:"badgeB", label:"B"});
+
+// 두 트랙 셀렉트 채우기 + 팀 수 + 배지
+function refreshApplySelect(){
+  function fill(sel){
+    const cur=sel.value;
+    sel.innerHTML='<option value="">팀 선택…</option>'+
+      teams.map(t=>'<option value="'+t.id+'">'+escapeHtml(t.name)+'</option>').join("");
+    if(teams.some(t=>String(t.id)===cur)) sel.value=cur;
+  }
+  fill(laneA.sel); fill(laneB.sel);
+  teamCountEl.textContent="등록된 팀 "+teams.length;
+  laneA.updateBadge(); laneB.updateBadge();
 }
 
-applyTeam.addEventListener("change", updateNextBadge);
+// 마스터: 동시 출발 / 둘 다 리셋
+function startBoth(){ laneA.resetFn(); laneB.resetFn(); laneA.startFn(); laneB.startFn(); }
+function resetBoth(){ laneA.resetFn(); laneB.resetFn(); }
+document.getElementById("btnStartBoth").addEventListener("click", startBoth);
+document.getElementById("btnResetBoth").addEventListener("click", resetBoth);
+
+// 트랙별 수동 적용 버튼
+document.querySelectorAll(".lane-man").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    (btn.dataset.lane==="A"?laneA:laneB).applyManual(btn.dataset.slot);
+  });
+});
+
+// 키보드: Space=동시 출발 · A=A 토글/정지 · L=B 토글/정지 · R=둘 다 리셋
+document.addEventListener("keydown",e=>{
+  const tag=(e.target.tagName||"").toLowerCase();
+  if(tag==="input"||tag==="select"||tag==="textarea") return;
+  if(document.getElementById("ceremony").classList.contains("show")) return;
+  if(e.code==="Space"){ e.preventDefault(); startBoth(); }
+  else if(e.key==="a"||e.key==="A"){ laneA.toggleFn(); }
+  else if(e.key==="l"||e.key==="L"){ laneB.toggleFn(); }
+  else if(e.key==="r"||e.key==="R"){ resetBoth(); }
+});
 
 // STEP 1: 기록 직접 입력 토글
 const toggleManual=document.getElementById("toggleManual");
@@ -1110,7 +1181,6 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape" && ceremony.classLi
 
 /* ======================= init ======================= */
 load();
-swRender();
 render();
 </script>
 </body>
